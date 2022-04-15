@@ -22,10 +22,13 @@ contract Keyword is ERC721 {
     }
 
     //Register NFT and store to dataStruct
-    function registerNFT(string memory _key, string memory _url) public {
+    function registerNFT(string memory _key, string memory _url) public returns (uint){
         dataStruct memory newData = dataStruct(hash(_key), _url);
         dataStructs.push(newData);
+
+        //Increase token count and return tokenID 
         idCounter.increment();
+        return idCounter.current()-1;
     }
 
     //Mint NFT
@@ -36,17 +39,16 @@ contract Keyword is ERC721 {
 
         //Mint NFT
         _safeMint(msg.sender, _id);
-    
-        //TBD
-        //Shape tokenURI
-        //Add tokenURI
-        //_setTokenURI(_id, );
+        //Set Token URI
+        _setTokenURI(_id, tokenURI(_id));
     }
 
     function tokenURI(uint256 _tokenId) override public view returns (string memory) {
-        string memory image = dataStructs[_tokenId].url;
-        string memory json = Base64.encode(bytes(string(abi.encodePacked('{"name": "MY NFT", "description": "", "image_data": "', image, '"}'))));
-        return string(abi.encodePacked('data:application/json;base64,', json));
+        // Use Token ID and return json HTTPS address
+        return "https://raw.githubusercontent.com/pokokichi13/kw/main/test.json";
+
+        //TBD 
+        // string(abi.encodePacked("https://example.com/", tokenId.toString(), ".json"));
     }
 
     // Hash keyword and check if it is correct
