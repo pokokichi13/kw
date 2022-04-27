@@ -4,8 +4,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "https://github.com/Brechtpd/base64/blob/main/base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Keyword is ERC721 {
+contract Keyword is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private idCounter;
 
@@ -22,11 +23,11 @@ contract Keyword is ERC721 {
     }
 
     //Register NFT and store to dataStruct
-    function registerNFT(string memory _key, string memory _url) public returns (uint){
+    function registerNFT(string memory _key, string memory _url) public returns (uint256){
         dataStruct memory newData = dataStruct(hash(_key), _url);
         dataStructs.push(newData);
 
-        //Increase token count and return tokenID 
+        //ID++
         idCounter.increment();
         return idCounter.current()-1;
     }
@@ -39,16 +40,14 @@ contract Keyword is ERC721 {
 
         //Mint NFT
         _safeMint(msg.sender, _id);
-        //Set Token URI
-        _setTokenURI(_id, tokenURI(_id));
+
+        //string memory uri = tokenURI(_id);
+        //Add tokenURI
+        _setTokenURI(_id, kaztokenURI(_id));
     }
 
-    function tokenURI(uint256 _tokenId) override public view returns (string memory) {
-        // Use Token ID and return json HTTPS address
-        return "https://raw.githubusercontent.com/pokokichi13/kw/main/test.json";
-
-        //TBD 
-        // string(abi.encodePacked("https://example.com/", tokenId.toString(), ".json"));
+    function kaztokenURI(uint256 _id) public pure returns (string memory) {
+        return string(abi.encodePacked("https://example.com/", Strings.toString(_id), ".json"));
     }
 
     // Hash keyword and check if it is correct
